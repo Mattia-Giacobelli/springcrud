@@ -139,7 +139,10 @@ public class EmployeeController {
         int age = ageUtility.getAge(emp.getBirthDate());
         String pass = emp.getUser().getPassword();
 
-        if (result.hasErrors() || age < 18 || !pass.matches(PASSWORD_REGEX)) {
+        boolean hasErrors = result.getFieldErrors().stream()
+                .anyMatch(error -> !error.getField().equals("user.password"));
+
+        if (hasErrors || age < 18 || (!pass.matches(PASSWORD_REGEX) && pass != "")) {
 
             empModel.addAttribute("employee", emp);
             empModel.addAttribute("roles", Role.values());
@@ -151,9 +154,17 @@ public class EmployeeController {
 
         } else {
 
-            emp.getUser().setPassword(passwordEncoder.encode(emp.getUser().getPassword()));
-
             Employee oldEmp = employeeService.findById(emp.getId());
+
+            if (pass == "") {
+
+                emp.getUser().setPassword(oldEmp.getUser().getPassword());
+
+            } else {
+
+                emp.getUser().setPassword(passwordEncoder.encode(emp.getUser().getPassword()));
+
+            }
 
             if (oldEmp.equals(emp)) {
 
