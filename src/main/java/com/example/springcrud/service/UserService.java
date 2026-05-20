@@ -2,6 +2,7 @@ package com.example.springcrud.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.springcrud.entities.User;
 import com.example.springcrud.repositories.IUserRepository;
 
 @Service
@@ -12,6 +13,18 @@ public class UserService {
     public UserService(IUserRepository userRepository) {
 
         this.userRepository = userRepository;
+
+    }
+
+    public User findById(Integer id) {
+
+        return userRepository.findById(id).orElseThrow();
+
+    }
+
+    public User findByUsername(String username) {
+
+        return userRepository.findByUsername(username).orElseThrow();
 
     }
 

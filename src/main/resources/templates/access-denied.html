@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Area riservata</title>
+    <style>body{font-family:system-ui;margin:2rem}</style>
+</head>
+<body>
+<h1>Accesso negato</h1>
+<p th:text="${#authentication?.name}">utente</p>
+<p>Non hai i permessi per accedere a questa pagina.</p>
+<a href="/login">Torna al login</a>
+</body>
+</html>

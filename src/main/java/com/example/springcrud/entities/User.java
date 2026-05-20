@@ -1,5 +1,12 @@
 package com.example.springcrud.entities;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +28,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "users")
 @Data
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,5 +61,14 @@ public class User {
     @Valid
     @NotNull(message = "campo obbligatorio")
     private Permission permission;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.permission == null || this.permission.getPermissionType() == null) {
+            return List.of();
+        }
+        String role = "ROLE_" + this.permission.getPermissionType().name();
+        return List.of(new SimpleGrantedAuthority(role));
+    }
 
 }
