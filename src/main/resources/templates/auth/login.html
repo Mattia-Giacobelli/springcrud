@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="https://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap css -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <title>Form dipendente</title>
+</head>
+
+<body>
+
+    <header>
+
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid gap-5">
+                <a class="navbar-brand" href="#">Azienda</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/employees">Dipendenti</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+    </header>
+
+    <main>
+
+        <div class="container">
+
+            <form action="">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" th:field="*{user.email}"
+                        th:classappend="${#fields.hasErrors('user.email')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('user.email')}" th:errors="*{user.email}">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+
+                    <label for="password" class="form-label">Password</label>
+
+                    <div class="input-group">
+
+                        <input type="text" class="form-control" id="password" th:field="*{user.password}"
+                            th:classappend="${#fields.hasErrors('user.password') || pass == false} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
+
+                        <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
+
+                            <span id="eyeIconOpen">
+                                <i class="bi bi-eye"></i>
+                            </span>
+
+                            <span id="eyeIconClosed" class="d-none">
+                                <i class="bi bi-eye-slash"></i>
+                            </span>
+
+                        </button>
+                        <span class="invalid-feedback" th:if="${#fields.hasErrors('user.password')}"
+                            th:errors="*{user.password}"></span>
+
+                        <span class="invalid-feedback" th:if="${pass == false}">La password
+                            deve essere min 6 max 10 1 minusc,2 maiusc, 1 num,2 caratteri speciali tra #!&-</span>
+                    </div>
+
+
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">
+                        Login
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+    </main>
+
+    <!-- Bootstrap js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <!-- Show pass
+    <script th:src="@{/js/show-pass.js}"></script> -->
+
+</body>
+
+</html>
