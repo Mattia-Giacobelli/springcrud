@@ -13,7 +13,7 @@
     <!-- Bootstrap icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
-    <title>Form dipendente</title>
+    <title>Form progetto</title>
 </head>
 
 <body>
@@ -34,7 +34,7 @@
                             <a class="nav-link active" aria-current="page" href="/home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/employees">Dipendenti</a>
+                            <a class="nav-link" href="/projects">Dipendenti</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/projects">Progetti</a>
@@ -98,12 +98,13 @@
 
         <div class="container">
 
-            <h1 th:text="${employee.id == null ? 'Aggiungi dipendente' : 'Modifica dipendente'}">
+            <h1 th:text="${project.id == null ? 'Aggiungi progetto' : 'Modifica progetto'}">
 
             </h1>
 
-            <form th:method="${employee.id == null} ? 'post' : 'put'" th:action="@{'/user/update'}"
-                th:object="${employee}">
+            <form th:method="${project.id == null} ? 'post' : 'put'"
+                th:action="@{${project.id == null} ? '/projects/create' : '/projects/' + ${project.id}}"
+                th:object="${project}">
 
                 <!-- <input type="hidden" th:field="*{id}" /> -->
 
@@ -111,102 +112,53 @@
                     <label for="name" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="name" th:field="*{name}"
                         th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
-                        placeholder="Inserisci il nome">
+                        placeholder="Inserisci il nome del progetto">
 
                     <span class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="surname" class="form-label">Cognome</label>
-                    <input type="text" class="form-control" id="surname" th:field="*{surname}"
-                        th:classappend="${#fields.hasErrors('surname')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
-                        placeholder="Inserisci il cognome">
+                    <label for="clientName" class="form-label">Nome Cliente</label>
+                    <input type="text" class="form-control" id="clientName" th:field="*{clientName}"
+                        th:classappend="${#fields.hasErrors('clientName')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
+                        placeholder="Inserisci il nome del cliente">
 
-                    <span class="invalid-feedback" th:if="${#fields.hasErrors('surname')}"
-                        th:errors="*{surname}"></span>
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('clientName')}"
+                        th:errors="*{clientName}"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="birthDate" class="form-label">Data di nascita</label>
-                    <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}"
-                        th:classappend="${#fields.hasErrors('birthDate') || (age != null and age < 18)} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
+                    <label for="budget" class="form-label">Budget</label>
+                    <input type="number" class="form-control" id="budget" th:field="*{budget}" step="0.01"
+                        th:classappend="${#fields.hasErrors('budget')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
+                        placeholder="Inserisci il budget">
 
-                    <span class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">
-                    </span>
-
-                    <div class="invalid-feedback" th:if="${age != null and age < 18}">Devi essere maggiorenne.</div>
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('budget')}" th:errors="*{budget}"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="fiscalCode" class="form-label">Codice Fiscale</label>
-                    <input type="text" class="form-control" id="fiscalCode" th:field="*{fiscalCode}"
-                        th:classappend="${#fields.hasErrors('fiscalCode')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
-                        placeholder="Inserisci codice fiscale">
+                    <label for="startDate" class="form-label">Data di inizio</label>
+                    <input type="date" class="form-control" id="startDate" th:field="*{startDate}"
+                        th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
 
-                    <span class="invalid-feedback" th:if="${#fields.hasErrors('fiscalCode')}"
-                        th:errors="*{fiscalCode}"></span>
-                </div>
-
-                <input type="hidden" th:field="*{role}">
-
-                <input type="hidden" th:field="*{salary}">
-
-                <input type="hidden" th:field="*{hiringDate}">
-                <!-- User form -->
-
-                <input type="hidden" th:field="*{user.id}">
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" th:field="*{user.email}"
-                        th:classappend="${#fields.hasErrors('user.email')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
-                    <span class="invalid-feedback" th:if="${#fields.hasErrors('user.email')}" th:errors="*{user.email}">
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">
                     </span>
                 </div>
 
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" th:field="*{user.username}"
-                        th:classappend="${#fields.hasErrors('user.username')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
-                    <span class="invalid-feedback" th:if="${#fields.hasErrors('user.username')}"
-                        th:errors="*{user.username}"></span>
-                </div>
+                    <label for="endDate" class="form-label">Data di fine</label>
+                    <input type="date" class="form-control" id="endDate" th:field="*{endDate}"
+                        th:classappend="${#fields.hasErrors('endDate') || #fields.hasErrors('endDateAfterStartDate') ? 'is-invalid' : (#fields.hasAnyErrors() ? 'is-valid' : '')}">
 
-                <input type="hidden" th:field="*{user.permission}">
-
-                <div class="mb-3">
-
-                    <label for="password" class="form-label">Password</label>
-
-                    <div class="input-group">
-
-                        <input type="password" class="form-control" id="password" th:field="*{user.password}"
-                            th:classappend="${#fields.hasErrors('user.password') || pass == false} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
-
-                        <button class="btn btn-outline-secondary" type="button" id="togglePasswordBtn">
-
-                            <span id="eyeIconOpen">
-                                <i class="bi bi-eye"></i>
-                            </span>
-
-                            <span id="eyeIconClosed" class="d-none">
-                                <i class="bi bi-eye-slash"></i>
-                            </span>
-
-                        </button>
-                        <span class="invalid-feedback" th:if="${#fields.hasErrors('user.password')}"
-                            th:errors="*{user.password}"></span>
-
-                        <span class="invalid-feedback" th:if="${pass == false}">La password
-                            deve essere min 6 max 10 1 minusc,2 maiusc, 1 num,2 caratteri speciali tra #!&-</span>
-                    </div>
-
-
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">
+                    </span>
+                    <span th:if="${#fields.hasErrors('endDateAfterStartDate')}" th:errors="*{endDateAfterStartDate}"
+                        class="invalid-feedback"></span>
                 </div>
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary"
-                        th:text="${employee.id == null} ? 'Aggiungi' : 'Modifica'">
+                        th:text="${project.id == null} ? 'Aggiungi' : 'Modifica'">
 
                     </button>
                 </div>

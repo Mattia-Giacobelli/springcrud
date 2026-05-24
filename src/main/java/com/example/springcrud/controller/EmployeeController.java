@@ -1,5 +1,9 @@
 package com.example.springcrud.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,19 +52,67 @@ public class EmployeeController {
     @GetMapping("")
     public String empIndex(@RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "age", required = false) Integer age,
+            @RequestParam(name = "salary", required = false) Integer salary,
+            @RequestParam(name = "role", required = false) Role role,
+            @RequestParam(defaultValue = "0") int page,
             Model empModel) {
+
+        boolean filtered = false;
 
         if (email != null && !email.trim().isEmpty()) {
 
-            empModel.addAttribute("employees", employeeService.findByEmail(email));
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+            Page<Employee> employees = employeeService.findByEmail(email, pageable);
+
+            filtered = true;
+
+            empModel.addAttribute("employees", employees);
+            empModel.addAttribute("roles", Role.values());
+            empModel.addAttribute("filtered", filtered);
 
         } else if (age != null) {
 
-            empModel.addAttribute("employees", employeeService.findByAge(age));
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+            Page<Employee> employees = employeeService.findByAge(age, pageable);
+
+            filtered = true;
+
+            empModel.addAttribute("employees", employees);
+            empModel.addAttribute("roles", Role.values());
+            empModel.addAttribute("filtered", filtered);
+
+        } else if (role != null) {
+
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+            Page<Employee> employees = employeeService.findByRole(role, pageable);
+
+            filtered = true;
+
+            empModel.addAttribute("employees", employees);
+            empModel.addAttribute("roles", Role.values());
+            empModel.addAttribute("filtered", filtered);
+
+        } else if (salary != null) {
+
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+            Page<Employee> employees = employeeService.findBySalary(salary, pageable);
+
+            filtered = true;
+
+            empModel.addAttribute("employees", employees);
+            empModel.addAttribute("roles", Role.values());
+            empModel.addAttribute("filtered", filtered);
 
         } else {
 
-            empModel.addAttribute("employees", employeeService.index());
+            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+            Page<Employee> employees = employeeService.index(pageable);
+
+            filtered = false;
+
+            empModel.addAttribute("employees", employees);
+            empModel.addAttribute("roles", Role.values());
+            empModel.addAttribute("filtered", filtered);
 
         }
 
@@ -119,7 +171,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/update/{id}")
-    public String getMethodName(@PathVariable Integer id, Model empModel) {
+    public String updateForm(@PathVariable Integer id, Model empModel) {
 
         empModel.addAttribute("employee", employeeService.findById(id));
         empModel.addAttribute("roles", Role.values());
@@ -133,7 +185,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public String putMethodName(@PathVariable Integer id, @Validated @ModelAttribute("employee") Employee emp,
+    public String updateEmp(@PathVariable Integer id, @Validated @ModelAttribute("employee") Employee emp,
             BindingResult result, RedirectAttributes red, Model empModel) {
 
         int age = ageUtility.getAge(emp.getBirthDate());
@@ -185,7 +237,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/")
-    public String deletePerson(@RequestParam("id") Integer id, RedirectAttributes red) {
+    public String deleteEmp(@RequestParam("id") Integer id, RedirectAttributes red) {
 
         Employee emp = employeeService.findById(id);
 

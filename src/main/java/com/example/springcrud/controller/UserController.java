@@ -62,17 +62,18 @@ public class UserController {
         return "/pages/user/user";
     }
 
-    @GetMapping("/update/{id}")
-    public String getMethodName(@PathVariable Integer id, Model userM) {
+    @GetMapping("/update")
+    public String updateUser(@AuthenticationPrincipal UserDetails userD, Model userM) {
 
-        userM.addAttribute("employee", employeeService.findById(id));
+        userM.addAttribute("employee", employeeService.findByUsername(userD.getUsername()));
 
         return "pages/user/userForm";
 
     }
 
-    @PutMapping("/{id}")
-    public String putMethodName(@PathVariable Integer id, @Validated @ModelAttribute("employee") Employee emp,
+    @PutMapping("/update")
+    public String putMethodName(
+            @AuthenticationPrincipal UserDetails userD, @Validated @ModelAttribute("employee") Employee emp,
             BindingResult result, RedirectAttributes red, Model empModel) {
 
         int age = ageUtility.getAge(emp.getBirthDate());
@@ -91,7 +92,7 @@ public class UserController {
 
         } else {
 
-            Employee oldEmp = employeeService.findById(emp.getId());
+            Employee oldEmp = employeeService.findByUsername(userD.getUsername());
 
             if (pass == "") {
 
@@ -102,6 +103,12 @@ public class UserController {
                 emp.getUser().setPassword(passwordEncoder.encode(emp.getUser().getPassword()));
 
             }
+
+            emp.setId(oldEmp.getId());
+            emp.setRole(oldEmp.getRole());
+            emp.setSalary(oldEmp.getSalary());
+            emp.setHiringDate(oldEmp.getHiringDate());
+            emp.getUser().setPermission(oldEmp.getUser().getPermission());
 
             if (oldEmp.equals(emp)) {
 

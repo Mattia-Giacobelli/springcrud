@@ -36,6 +36,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/employees">Dipendenti</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/projects">Progetti</a>
+                        </li>
 
                     </ul>
                 </div>
@@ -125,8 +128,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="name" class="form-label">Data di nascita</label>
-                    <input type="date" class="form-control" id="name" th:field="*{birthDate}"
+                    <label for="birthDate" class="form-label">Data di nascita</label>
+                    <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}"
                         th:classappend="${#fields.hasErrors('birthDate') || (age != null and age < 18)} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
 
                     <span class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">
