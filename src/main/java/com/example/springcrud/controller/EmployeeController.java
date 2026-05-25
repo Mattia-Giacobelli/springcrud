@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.springcrud.entities.Employee;
+import com.example.springcrud.entities.Permission;
+import com.example.springcrud.entities.User;
 import com.example.springcrud.service.EmployeeService;
 import com.example.springcrud.service.PermissionService;
 import com.example.springcrud.utilities.AgeUtility;
@@ -52,66 +55,47 @@ public class EmployeeController {
     @GetMapping("")
     public String empIndex(@RequestParam(name = "email", required = false) String email,
             @RequestParam(name = "age", required = false) Integer age,
-            @RequestParam(name = "salary", required = false) Integer salary,
+            @RequestParam(name = "salary", required = false) Double salary,
             @RequestParam(name = "role", required = false) Role role,
             @RequestParam(defaultValue = "0") int page,
             Model empModel) {
 
         boolean filtered = false;
 
-        if (email != null && !email.trim().isEmpty()) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
+        Page<Employee> employees = employeeService.index(email, age, role, salary, pageable);
 
-            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
-            Page<Employee> employees = employeeService.findByEmail(email, pageable);
+        empModel.addAttribute("employees", employees);
+        empModel.addAttribute("roles", Role.values());
+
+        if (email != null && !email.trim().isEmpty()) {
 
             filtered = true;
 
-            empModel.addAttribute("employees", employees);
-            empModel.addAttribute("roles", Role.values());
             empModel.addAttribute("filtered", filtered);
 
         } else if (age != null) {
 
-            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
-            Page<Employee> employees = employeeService.findByAge(age, pageable);
-
             filtered = true;
 
-            empModel.addAttribute("employees", employees);
-            empModel.addAttribute("roles", Role.values());
             empModel.addAttribute("filtered", filtered);
 
         } else if (role != null) {
 
-            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
-            Page<Employee> employees = employeeService.findByRole(role, pageable);
-
             filtered = true;
 
-            empModel.addAttribute("employees", employees);
-            empModel.addAttribute("roles", Role.values());
             empModel.addAttribute("filtered", filtered);
 
         } else if (salary != null) {
 
-            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
-            Page<Employee> employees = employeeService.findBySalary(salary, pageable);
-
             filtered = true;
 
-            empModel.addAttribute("employees", employees);
-            empModel.addAttribute("roles", Role.values());
             empModel.addAttribute("filtered", filtered);
 
         } else {
 
-            Pageable pageable = PageRequest.of(page, 5, Sort.by("name").ascending());
-            Page<Employee> employees = employeeService.index(pageable);
-
             filtered = false;
 
-            empModel.addAttribute("employees", employees);
-            empModel.addAttribute("roles", Role.values());
             empModel.addAttribute("filtered", filtered);
 
         }
@@ -186,7 +170,7 @@ public class EmployeeController {
 
     @PutMapping("/{id}")
     public String updateEmp(@PathVariable Integer id, @Validated @ModelAttribute("employee") Employee emp,
-            BindingResult result, RedirectAttributes red, Model empModel) {
+            BindingResult result, @AuthenticationPrincipal User user, RedirectAttributes red, Model empModel) {
 
         int age = ageUtility.getAge(emp.getBirthDate());
         String pass = emp.getUser().getPassword();
@@ -223,6 +207,16 @@ public class EmployeeController {
                 red.addFlashAttribute("msg", emp.getFiscalCode() + ", Nessuna modifica apportata");
 
                 return "redirect:/employees";
+
+            }
+
+            User newUser = emp.getUser();
+
+            if (newUser.getUsername().equals(user.getUsername()) && newUser.getPermission() != user.getPermission()) {
+
+                employeeService.update(emp);
+
+                return "redirect:/logout";
 
             }
 

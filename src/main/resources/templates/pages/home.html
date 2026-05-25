@@ -78,6 +78,9 @@
 
                                 <div class="dropdown-menu dropdown-menu-dark dropdown-menu-right"
                                     aria-labelledby="navbarDropdown">
+                                    <a class="btn btn-dark" th:href="@{/user/profile}">
+                                        <span>Profilo</span>
+                                    </a>
                                     <form id="logout-form" th:action="@{/logout}" method="POST">
                                         <button class="btn btn-dark" type="submit">
                                             Logout

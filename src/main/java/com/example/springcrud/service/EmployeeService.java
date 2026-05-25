@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springcrud.entities.Employee;
 import com.example.springcrud.entities.Permission;
@@ -15,7 +17,10 @@ import com.example.springcrud.repositories.IPermissionRepository;
 import com.example.springcrud.repositories.IProjectRepository;
 import com.example.springcrud.utilities.Role;
 
+import jakarta.validation.constraints.Email;
+
 @Service
+@Transactional(readOnly = true)
 public class EmployeeService {
 
     private final IEmployeeRepository employeeRepo;
@@ -31,9 +36,40 @@ public class EmployeeService {
 
     }
 
-    public Page<Employee> index(Pageable pageable) {
+    public Page<Employee> index(String email, Integer age, Role role, Double salary, Pageable pageable) {
 
-        return employeeRepo.findAll(pageable);
+        // seleziona tutto
+        Specification<Employee> spec = (root, query, cb) -> cb.conjunction();
+
+        if (email != null && !email.trim().isEmpty()) {
+
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("user").get("email")),
+                    "%" + email.toLowerCase() + "%"));
+
+        }
+
+        if (age != null) {
+
+            LocalDate minDate = LocalDate.now().minusYears(age + 1).plusDays(1);
+            LocalDate maxDate = LocalDate.now().minusYears(age);
+
+            spec = spec.and((root, query, cb) -> cb.between(root.get("birthDate"), minDate, maxDate));
+
+        }
+
+        if (role != null) {
+
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("role"), role));
+
+        }
+
+        if (salary != null) {
+
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("salary"), salary));
+
+        }
+
+        return employeeRepo.findAll(spec, pageable);
 
     }
 
@@ -124,18 +160,21 @@ public class EmployeeService {
 
     }
 
+    @Transactional
     public Employee create(Employee emp) {
 
         return employeeRepo.save(emp);
 
     }
 
+    @Transactional
     public Employee update(Employee emp) {
 
         return employeeRepo.save(emp);
 
     }
 
+    @Transactional
     public void delete(Integer id) {
 
         employeeRepo.deleteById(id);

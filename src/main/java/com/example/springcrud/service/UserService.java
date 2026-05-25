@@ -1,11 +1,13 @@
 package com.example.springcrud.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springcrud.entities.User;
 import com.example.springcrud.repositories.IUserRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class UserService {
 
     private final IUserRepository userRepository;

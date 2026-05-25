@@ -1,0 +1,24 @@
+* {
+
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+
+/* Access denied */
+
+.container {
+
+    height: calc(100vh - 56px);
+
+    .denied-msg {
+
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+}

@@ -148,6 +148,21 @@ public class ProjectController {
 
     }
 
+    @DeleteMapping("/management/{eid}/{pid}")
+    public String unassignEmp(@PathVariable Integer eid, @PathVariable Integer pid, Model pojectM) {
+
+        Employee emp = empService.findById(eid);
+
+        Project project = projectService.findById(pid);
+
+        emp.getProjects().remove(project);
+
+        empService.update(emp);
+
+        return "redirect:/projects/management/" + project.getId();
+
+    }
+
     @GetMapping("/management/{id}")
     public String manageProject(@PathVariable Integer id, Model projectM) {
 
@@ -179,21 +194,6 @@ public class ProjectController {
         empService.update(emp);
 
         return "redirect:/projects/management/" + project.getId();
-    }
-
-    @DeleteMapping("/management/{eid}/{pid}")
-    public String unassignEmp(@PathVariable Integer eid, @PathVariable Integer pid, Model pojectM) {
-
-        Employee emp = empService.findById(eid);
-
-        Project project = projectService.findById(pid);
-
-        emp.getProjects().remove(project);
-
-        empService.update(emp);
-
-        return "redirect:/projects/management/" + project.getId();
-
     }
 
 }

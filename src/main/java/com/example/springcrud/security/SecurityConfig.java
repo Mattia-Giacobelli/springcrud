@@ -29,7 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/home/**").hasRole("ADMIN")
                         .requestMatchers("/employees/**").hasRole("ADMIN")
                         .requestMatchers("/projects", "/projects/**").hasRole("ADMIN")
-                        .requestMatchers("/user", "/user/**").hasRole("USER")
+                        .requestMatchers("/user", "/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
 
                 // indicare il componente per l'autenticazione

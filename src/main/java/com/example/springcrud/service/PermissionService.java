@@ -3,12 +3,14 @@ package com.example.springcrud.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springcrud.entities.Permission;
 import com.example.springcrud.repositories.IPermissionRepository;
 import com.example.springcrud.utilities.PermissionType;
 
 @Service
+@Transactional(readOnly = true)
 public class PermissionService {
 
     private final IPermissionRepository permissionRepo;

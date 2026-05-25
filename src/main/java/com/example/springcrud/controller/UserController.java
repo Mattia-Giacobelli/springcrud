@@ -21,6 +21,11 @@ import com.example.springcrud.service.EmployeeService;
 import com.example.springcrud.service.PermissionService;
 import com.example.springcrud.service.UserService;
 import com.example.springcrud.utilities.AgeUtility;
+import com.example.springcrud.utilities.PermissionType;
+import com.example.springcrud.utilities.Role;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/user")
@@ -66,6 +71,8 @@ public class UserController {
     public String updateUser(@AuthenticationPrincipal UserDetails userD, Model userM) {
 
         userM.addAttribute("employee", employeeService.findByUsername(userD.getUsername()));
+        userM.addAttribute("roles", Role.values());
+        userM.addAttribute("permissions", permissionService.findAll());
 
         return "pages/user/userForm";
 
@@ -73,8 +80,9 @@ public class UserController {
 
     @PutMapping("/update")
     public String putMethodName(
-            @AuthenticationPrincipal UserDetails userD, @Validated @ModelAttribute("employee") Employee emp,
-            BindingResult result, RedirectAttributes red, Model empModel) {
+            @Validated @ModelAttribute("employee") Employee emp, BindingResult result,
+            @AuthenticationPrincipal User user, RedirectAttributes red, Model empModel,
+            HttpServletRequest request) {
 
         int age = ageUtility.getAge(emp.getBirthDate());
         String pass = emp.getUser().getPassword();
@@ -92,7 +100,7 @@ public class UserController {
 
         } else {
 
-            Employee oldEmp = employeeService.findByUsername(userD.getUsername());
+            Employee oldEmp = employeeService.findByUsername(user.getUsername());
 
             if (pass == "") {
 
@@ -105,16 +113,40 @@ public class UserController {
             }
 
             emp.setId(oldEmp.getId());
-            emp.setRole(oldEmp.getRole());
-            emp.setSalary(oldEmp.getSalary());
-            emp.setHiringDate(oldEmp.getHiringDate());
-            emp.getUser().setPermission(oldEmp.getUser().getPermission());
+
+            if (user.getPermission().getPermissionType() != PermissionType.ADMIN) {
+
+                emp.setRole(oldEmp.getRole());
+                emp.setSalary(oldEmp.getSalary());
+                emp.setHiringDate(oldEmp.getHiringDate());
+                emp.getUser().setPermission(oldEmp.getUser().getPermission());
+
+            }
 
             if (oldEmp.equals(emp)) {
 
                 red.addFlashAttribute("msg", "Nessuna modifica apportata");
 
                 return "redirect:/user/profile";
+
+            }
+
+            User newUser = emp.getUser();
+
+            if (newUser.getUsername().equals(user.getUsername())
+                    && !newUser.getPermission().equals(user.getPermission())) {
+
+                employeeService.update(emp);
+
+                try {
+
+                    request.logout();
+
+                } catch (ServletException e) {
+
+                    e.printStackTrace();
+
+                }
 
             }
 

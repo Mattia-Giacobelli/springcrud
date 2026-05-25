@@ -77,6 +77,9 @@
 
                                 <div class="dropdown-menu dropdown-menu-dark dropdown-menu-right"
                                     aria-labelledby="navbarDropdown">
+                                    <a class="btn btn-dark" th:href="@{/user/profile}">
+                                        <span>Profilo</span>
+                                    </a>
                                     <form id="logout-form" th:action="@{/logout}" method="POST">
                                         <button class="btn btn-dark" type="submit">
                                             Logout
@@ -147,11 +150,40 @@
                         th:errors="*{fiscalCode}"></span>
                 </div>
 
-                <input type="hidden" th:field="*{role}">
+                <div sec:authorize="hasRole('ADMIN')" class="mb-3">
+                    <label for="role" class="form-label">Ruolo</label>
+                    <select class="form-select" id="role" th:field="*{role}" placeholder="Seleziona ruolo"
+                        th:classappend="${#fields.hasErrors('role')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
 
-                <input type="hidden" th:field="*{salary}">
+                        <option value="" selected th:if="${employee.id == null}">Seleziona il ruolo</option>
 
-                <input type="hidden" th:field="*{hiringDate}">
+                        <option th:each="rol : ${roles}" th:value="${rol}" th:text="${rol}">
+
+                        </option>
+
+                    </select>
+
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></span>
+                </div>
+
+                <div sec:authorize="hasRole('ADMIN')" class="mb-3">
+                    <label for="salary" class="form-label">Salario</label>
+                    <input type="number" class="form-control" id="salary" th:field="*{salary}" step="0.01"
+                        th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
+                        placeholder="Inserisci il salario">
+
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></span>
+                </div>
+
+                <div sec:authorize="hasRole('ADMIN')" class="mb-3">
+                    <label for="hiringDate" class="form-label">Data di assunzione</label>
+                    <input type="date" class="form-control" id="hiringDate" th:field="*{hiringDate}"
+                        th:classappend="${#fields.hasErrors('hiringDate')} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')">
+
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('hiringDate')}"
+                        th:errors="*{hiringDate}"></span>
+                </div>
+
                 <!-- User form -->
 
                 <input type="hidden" th:field="*{user.id}">
@@ -172,7 +204,22 @@
                         th:errors="*{user.username}"></span>
                 </div>
 
-                <input type="hidden" th:field="*{user.permission}">
+                <div sec:authorize="hasRole('ADMIN')" class="mb-3">
+                    <label for="permission" class="form-label">Permesso</label>
+                    <select class="form-select" id="permission" th:field="*{user.permission}"
+                        th:classappend="${#fields.hasErrors('user.permission') || pass == false} ? 'is-invalid' : (${#fields.hasAnyErrors()} ? 'is-valid' : '')"
+                        placeholder="Seleziona Permesso">
+
+                        <option value="" selected th:if="${employee.id == null}">Seleziona il permesso</option>
+
+                        <option th:each="perm : ${permissions}" th:value="${perm.id}" th:text="${perm.permissionType}">
+
+                        </option>
+
+                    </select>
+                    <span class="invalid-feedback" th:if="${#fields.hasErrors('user.permission')}"
+                        th:errors="*{user.permission}"></span>
+                </div>
 
                 <div class="mb-3">
 
