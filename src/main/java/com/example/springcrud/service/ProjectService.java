@@ -46,14 +46,14 @@ public class ProjectService {
 
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Project update(Project project) {
 
         return projectRepo.save(project);
 
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Integer id) {
 
         projectRepo.deleteById(id);

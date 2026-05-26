@@ -167,14 +167,14 @@ public class EmployeeService {
 
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Employee update(Employee emp) {
 
         return employeeRepo.save(emp);
 
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Integer id) {
 
         employeeRepo.deleteById(id);
